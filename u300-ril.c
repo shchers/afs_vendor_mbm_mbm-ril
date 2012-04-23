@@ -382,6 +382,8 @@ static void processRequest(int request, void *data, size_t datalen, RIL_Token t)
      */
     if (radio_state == RADIO_STATE_UNAVAILABLE
         && request != RIL_REQUEST_GET_SIM_STATUS) {
+        LOGW("[%s] Ignoring request due to RADIO_STATE_UNAVAILABLE state",
+                 __FUNCTION__);
         RIL_onRequestComplete(t, RIL_E_RADIO_NOT_AVAILABLE, NULL, 0);
         return;
     }
@@ -399,6 +401,9 @@ static void processRequest(int request, void *data, size_t datalen, RIL_Token t)
              request == RIL_REQUEST_GET_IMEI ||
              request == RIL_REQUEST_BASEBAND_VERSION ||
              request == RIL_REQUEST_SCREEN_STATE)) {
+        LOGW("[%s] Ignoring request due to %s state", __FUNCTION__,
+                radio_state == RADIO_STATE_OFF ?
+                "RADIO_STATE_OFF" : "RADIO_STATE_SIM_NOT_READY");
         RIL_onRequestComplete(t, RIL_E_RADIO_NOT_AVAILABLE, NULL, 0);
         return;
     }
