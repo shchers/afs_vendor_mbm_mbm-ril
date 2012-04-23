@@ -898,6 +898,10 @@ static void onUnsolicited(const char *s, const char *sms_pdu)
         onStkProactiveCommand(s);
     else if (strStartsWith(s, "*STKN:"))
         onStkEventNotify(s);
+    else if (strStartsWith(s, "+PACSP0")) {
+        setRadioState(RADIO_STATE_SIM_READY);
+    }
+
 }
 
 static void signalCloseQueues(void)
