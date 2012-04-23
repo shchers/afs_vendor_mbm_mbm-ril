@@ -269,17 +269,18 @@ int getSignalStrength(RIL_SignalStrength_v6 *signalStrength){
 
     memset(signalStrength, 0, sizeof(RIL_SignalStrength_v6));
 
-    signalStrength->LTE_SignalStrength.signalStrength = 0x7FFFFFFF;
-    signalStrength->LTE_SignalStrength.rsrp = 0x7FFFFFFF;
-    signalStrength->LTE_SignalStrength.rsrq = 0x7FFFFFFF;
-    signalStrength->LTE_SignalStrength.rssnr = 0x7FFFFFFF;
-    signalStrength->LTE_SignalStrength.cqi = 0x7FFFFFFF;
+    // XXX: LTE_SignalStrength cann't be updated so we disable it
+    signalStrength->LTE_SignalStrength.signalStrength = -1;
+    signalStrength->LTE_SignalStrength.rsrp = -1;
+    signalStrength->LTE_SignalStrength.rsrq = -1;
+    signalStrength->LTE_SignalStrength.rssnr = -1;
+    signalStrength->LTE_SignalStrength.cqi = -1;
 
     err = at_send_command_singleline("AT+CSQ", "+CSQ:", &atresponse);
 
     if (err != AT_NOERROR)
         goto cind;
-    
+
     line = atresponse->p_intermediates->line;
 
     err = at_tok_start(&line);
@@ -788,36 +789,33 @@ void requestSetPreferredNetworkType(void *data, size_t datalen,
     int err = 0;
     int rat;
     int arg;
-    RIL_Errno errno = RIL_E_GENERIC_FAILURE;
 
     rat = ((int *) data)[0];
 
     switch (rat) {
-    case PREF_NET_TYPE_GSM_WCDMA_AUTO:
-    case PREF_NET_TYPE_GSM_WCDMA:
-        arg = PREF_NET_TYPE_3G;
-        break;
     case PREF_NET_TYPE_GSM_ONLY:
+        LOGD("[%s] netwotk type = 2g only", __FUNCTION__);
         arg = PREF_NET_TYPE_2G_ONLY;
         break;
     case PREF_NET_TYPE_WCDMA:
+        LOGD("[%s] netwotk type = 3g only", __FUNCTION__);
         arg = PREF_NET_TYPE_3G_ONLY;
         break;
     default:
-        errno = RIL_E_MODE_NOT_SUPPORTED;
-        goto error;
+        LOGW("[%s] Trying to unknown network type (%d)", __FUNCTION__, rat);
+    case PREF_NET_TYPE_GSM_WCDMA_AUTO:
+    case PREF_NET_TYPE_GSM_WCDMA:
+        LOGD("[%s] netwotk type = auto", __FUNCTION__);
+        arg = PREF_NET_TYPE_3G;
+        break;
     }
 
     pref_net_type = arg;
 
     err = at_send_command("AT+CFUN=%d", arg);
-    if (err == AT_NOERROR) {
-        RIL_onRequestComplete(t, RIL_E_SUCCESS, NULL, 0);
-        return;
-    }
-
-error:
-    RIL_onRequestComplete(t, errno, NULL, 0);
+	RIL_onRequestComplete(t,
+            (err == AT_NOERROR)? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE,
+            NULL, 0);
 }
 
 /**
