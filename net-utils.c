@@ -1,16 +1,16 @@
 /*
  * Copyright 2008, The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -50,7 +50,7 @@ int ifc_init(void)
     if (ifc_ctl_sock == -1) {
 	ifc_ctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (ifc_ctl_sock < 0)
-	    LOGE("%s() socket() failed: %s", __func__, strerror(errno));
+	    ALOGE("%s() socket() failed: %s", __func__, strerror(errno));
     }
     return ifc_ctl_sock < 0 ? -1 : 0;
 }
@@ -129,21 +129,21 @@ int ifc_configure(const char *ifname,
     ifc_init();
 
     if (ifc_up(ifname)) {
-	LOGE("%s() Failed to turn on interface %s: %s", __func__,
+	ALOGE("%s() Failed to turn on interface %s: %s", __func__,
 	     ifname,
 	     strerror(errno));
 	ifc_close();
 	return -1;
     }
     if (ifc_set_addr(ifname, address)) {
-	LOGE("%s() Failed to set ipaddr %s: %s", __func__,
+	ALOGE("%s() Failed to set ipaddr %s: %s", __func__,
 	     ipaddr_to_string(address), strerror(errno));
 	ifc_down(ifname);
 	ifc_close();
 	return -1;
     }
     if (ifc_set_mask(ifname, netmask)) {
-	LOGE("%s() failed to set netmask %s: %s", __func__,
+	ALOGE("%s() failed to set netmask %s: %s", __func__,
 	     ipaddr_to_string(netmask), strerror(errno));
 	ifc_down(ifname);
 	ifc_close();

@@ -15,7 +15,7 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 **
-** Based on the Android ril daemon and reference RIL by 
+** Based on the Android ril daemon and reference RIL by
 ** The Android Open Source Project.
 **
 ** Heavily modified for ST-Ericsson U300 modems.
@@ -38,12 +38,12 @@
  * it's good enough.
  */
 static void *dummyDispatch(void *data, size_t datalen);
- 
+
 #define dispatchCdmaSms dummyDispatch
 #define dispatchCdmaSmsAck dummyDispatch
 #define dispatchCdmaBrSmsCnf dummyDispatch
 #define dispatchRilCdmaSmsWriteArgs dummyDispatch
-  
+
 static void *dispatchCallForward(void *data, size_t datalen);
 static void *dispatchDial(void *data, size_t datalen);
 static void *dispatchSIM_IO(void *data, size_t datalen);
@@ -78,6 +78,9 @@ static void dummyResponse(void);
 
 #define dispatchDataCall dispatchStrings
 #define responseSetupDataCall responseStrings
+
+#define dispatchCdmaSubscriptionSource dispatchStrings
+#define dispatchVoiceRadioTech dispatchStrings
 
 /*
 should be looked into how dispatchDataCall and others really should be handled,
@@ -206,7 +209,7 @@ static void *dispatchStrings(void *data, size_t datalen)
 
 static void *dispatchGsmBrSmsCnf(void *data, size_t datalen)
 {
-    RIL_GSM_BroadcastSmsConfigInfo **a = 
+    RIL_GSM_BroadcastSmsConfigInfo **a =
         (RIL_GSM_BroadcastSmsConfigInfo **) data;
     int count;
     void **ret;
